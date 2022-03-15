@@ -1,0 +1,81 @@
+#
+# mail properties
+#
+# google
+spring:
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/sender}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:****}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      idle-timeout: 10000
+      maximum-pool-size: 50
+      minimum-idle: 20
+      pool-name: HikariPool
+      auto-commit: false
+  jpa:
+    database: postgresql
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.type: trace
+      hibernate.connection.charSet: utf-8
+      hibernate.connection.useUnicode: true
+      hibernate.connection.characterEncoding: utf-8
+      hibernate.integration.envers.enabled: false
+
+      hibernate.id.new_generator_mappings: false
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+
+      hibernate.show_sql: false
+      hibernate.use_sql_comments: false
+      hibernate.format_sql: true
+      hibernate.session.events.log: false
+      hibernate.generate_statistics: true
+
+      hibernate.jdbc.lob.non_contextual_creation: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+
+    username: ****
+    password: ****
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        from: ****
+
+# mail.sry
+#spring:
+#  mail:
+#    host: smtp.mail.ru
+#    port: 465
+#    username:
+#    password:
+#    properties:
+#      mail:
+#        debug: true
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#        from: komsomoles.vesti@mail.ru
+
