@@ -1,16 +1,16 @@
-package com.sacret.sender.mailsender.entity;
+package com.sacret.sender.mailsender.model.entity;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Getter
-@Setter
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "email")
 public class Email {
     @Id
