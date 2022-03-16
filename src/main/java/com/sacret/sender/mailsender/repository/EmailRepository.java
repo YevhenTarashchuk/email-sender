@@ -1,6 +1,6 @@
 package com.sacret.sender.mailsender.repository;
 
-import com.sacret.sender.mailsender.entity.Email;
+import com.sacret.sender.mailsender.model.entity.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
