@@ -7,6 +7,7 @@ build/
 **/resources/emails_1.txt
 **/resources/template/emailTemplate.html
 **/resources/image.jpg
+**/logs/
 
 ### STS ###
 .apt_generated
