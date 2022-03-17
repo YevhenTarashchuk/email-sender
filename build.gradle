@@ -18,22 +18,41 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	hibernateValidatorVersion = '7.0.3.Final'
+	validationApiVersion = '2.0.1.Final'
+	junitVersion = '4.13.1'
+	mockitoVersion = '4.3.1'
+}
+
 dependencies {
+	//spring
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//db
+	implementation "com.h2database:h2"
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation "com.zaxxer:HikariCP"
+
+	//validation
+	implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+	implementation "javax.validation:validation-api:${validationApiVersion}"
 
 	//log
 	implementation "ch.qos.logback:logback-core:1.2.9"
 	implementation "ch.qos.logback:logback-classic:1.2.9"
 
-	// util
+	//util
 	implementation 'commons-io:commons-io:2.11.0'
-}
 
-tasks.named('test') {
-	useJUnitPlatform()
+	testImplementation "junit:junit:${junitVersion}"
+	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
