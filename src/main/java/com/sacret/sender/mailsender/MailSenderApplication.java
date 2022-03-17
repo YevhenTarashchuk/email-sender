@@ -1,6 +1,6 @@
 package com.sacret.sender.mailsender;
 
-import com.sacret.sender.mailsender.entity.Email;
+import com.sacret.sender.mailsender.model.entity.Email;
 import com.sacret.sender.mailsender.repository.EmailRepository;
 import com.sacret.sender.mailsender.service.EmailSender;
 import lombok.AccessLevel;
@@ -37,7 +37,7 @@ public class MailSenderApplication {
 //			saveToDB()
 
 //			send email
-			sendEmails();
+//			sendEmails();
 		};
 	}
 
@@ -69,7 +69,6 @@ public class MailSenderApplication {
 			}
 		}
 	}
-
 
 	private List<String> getMails() throws IOException {
 		final File file = new File("/emails_1.txt");
