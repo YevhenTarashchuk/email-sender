@@ -4,10 +4,15 @@ import com.sacret.sender.mailsender.exception.BaseException;
 import com.sacret.sender.mailsender.model.dto.EmailJobDTO;
 import com.sacret.sender.mailsender.model.entity.EmailJob;
 import com.sacret.sender.mailsender.model.enumaration.ErrorCode;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -17,8 +22,15 @@ import java.util.Objects;
 
 import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
+@Getter
+@Setter
 @Configuration
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@ConfigurationProperties(prefix = "mapper")
 public class ModelMapperConfig {
+
+    String subject;
+
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
@@ -43,7 +55,7 @@ public class ModelMapperConfig {
             }
         };
         Converter<String, String> subjectContext =
-                ctx -> Objects.isNull(ctx.getSource()) ? "Останови войну пока еще не поздно!" : ctx.getSource();
+                ctx -> Objects.isNull(ctx.getSource()) ? subject : ctx.getSource();
 
         modelMapper.typeMap(EmailJobDTO.class, EmailJob.class)
                 .addMappings(mapper -> {
