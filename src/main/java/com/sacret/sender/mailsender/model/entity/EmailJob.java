@@ -29,6 +29,7 @@ public class EmailJob {
     LocalDateTime finished;
     Integer count;
     String subject;
+    @Column(length = 1500)
     String text;
     @ElementCollection
     @CollectionTable(name = "email_history")
