@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface EmailRepository extends JpaRepository<Email, String> {
 
-    List<Email> findAllByEmailNotContainsIgnoreCase(String email);
+    List<Email> findAllByValueNotContainsIgnoreCase(String email);
 
 }

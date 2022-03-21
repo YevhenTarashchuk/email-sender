@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class DataService {
         LOG.info("received {} unique emails in DTO", emails.size());
 
         Set<String> saved = emailRepository.findAll().stream()
-                .map(Email::getEmail)
+                .map(Email::getValue)
                 .collect(Collectors.toSet());
 
         emails.removeAll(saved);
@@ -48,7 +49,7 @@ public class DataService {
 
         int totalAdded = emailRepository.saveAll(
                 emails.stream()
-                        .map(email -> new Email().setEmail(email))
+                        .map(email -> new Email().setValue(email))
                         .collect(Collectors.toList())
         ).size();
 
@@ -82,7 +83,7 @@ public class DataService {
         return new EmailDTO()
                 .setEmails(
                         emailRepository.findAll().stream()
-                                .map(Email::getEmail)
+                                .map(Email::getValue)
                                 .collect(Collectors.toSet())
                 );
     }

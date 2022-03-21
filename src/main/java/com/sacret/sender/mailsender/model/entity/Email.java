@@ -14,5 +14,5 @@ import javax.persistence.Table;
 @Table(name = "email")
 public class Email {
     @Id
-    String email;
+    String value;
 }

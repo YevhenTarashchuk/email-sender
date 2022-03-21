@@ -53,9 +53,9 @@ public class DataControllerTest extends BaseTest {
         Assert.assertEquals(3, result.size());
         Assert.assertTrue(result.containsAll(
                 List.of(
-                        new Email().setEmail("post.email.1@ukr.net"),
-                        new Email().setEmail("post.email.2@ukr.net"),
-                        new Email().setEmail("post.email.3@ukr.net")))
+                        new Email().setValue("post.email.1@ukr.net"),
+                        new Email().setValue("post.email.2@ukr.net"),
+                        new Email().setValue("post.email.3@ukr.net")))
         );
 
         verify(dataService).upload(anySet());
@@ -76,9 +76,9 @@ public class DataControllerTest extends BaseTest {
         Assert.assertEquals(3, result.size());
         Assert.assertTrue(result.containsAll(
                 List.of(
-                        new Email().setEmail("post.file.1@ukr.net"),
-                        new Email().setEmail("post.file.2@ukr.net"),
-                        new Email().setEmail("post.file.3@ukr.net")))
+                        new Email().setValue("post.file.1@ukr.net"),
+                        new Email().setValue("post.file.2@ukr.net"),
+                        new Email().setValue("post.file.3@ukr.net")))
         );
 
         verify(dataService).upload(anySet());
