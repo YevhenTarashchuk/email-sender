@@ -4,11 +4,17 @@
 # google
 spring:
 
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+      enabled: true
+
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/sender}
-    username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:****}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/sender-test}
+    username: ${DATASOURCE_USERNAME:*****}
+    password: ${DATASOURCE_PASSWORD:*****}
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       idle-timeout: 10000
@@ -51,8 +57,8 @@ spring:
     host: smtp.gmail.com
     port: 587
 
-    username: ****
-    password: ****
+    username: *****
+    password: *****
     properties:
       mail:
         debug: true
@@ -60,22 +66,6 @@ spring:
           auth: true
           starttls:
             enable: true
-        from: ****
+        from: *****
 
-# mail.sry
-#spring:
-#  mail:
-#    host: smtp.mail.ru
-#    port: 465
-#    username:
-#    password:
-#    properties:
-#      mail:
-#        debug: true
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
-#        from: komsomoles.vesti@mail.ru
 

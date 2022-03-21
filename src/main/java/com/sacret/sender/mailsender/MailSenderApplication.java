@@ -1,6 +1,6 @@
 package com.sacret.sender.mailsender;
 
-import com.sacret.sender.mailsender.entity.Email;
+import com.sacret.sender.mailsender.model.entity.Email;
 import com.sacret.sender.mailsender.repository.EmailRepository;
 import com.sacret.sender.mailsender.service.EmailSender;
 import lombok.AccessLevel;
@@ -37,18 +37,18 @@ public class MailSenderApplication {
 //			saveToDB()
 
 //			send email
-			sendEmails();
+//			sendEmails();
 		};
 	}
 
 	private void saveToDB() throws IOException {
 		List<String> mails = getMails();
-		emailRepository.saveAll(mails.stream().map(mail -> new Email().setEmail(mail)).collect(Collectors.toList()));
+		emailRepository.saveAll(mails.stream().map(mail -> new Email().setValue(mail)).collect(Collectors.toList()));
 	}
 
 	private void sendEmails() {
-		List<String> mails = emailRepository.findAllByEmailNotContainsIgnoreCase("@mail.ru").stream()
-				.map(Email::getEmail)
+		List<String> mails = emailRepository.findAllByValueNotContainsIgnoreCase("@mail.ru").stream()
+				.map(Email::getValue)
 				.collect(Collectors.toList());
 
 		System.out.println(mails);
@@ -59,7 +59,7 @@ public class MailSenderApplication {
 			if (i == 9) {
 				try {
 					emailSender.sendEmail(arr);
-					emailRepository.deleteAll(Arrays.stream(arr).map(mail -> new Email().setEmail(mail)).collect(Collectors.toList()));
+					emailRepository.deleteAll(Arrays.stream(arr).map(mail -> new Email().setValue(mail)).collect(Collectors.toList()));
 				} catch (Exception e) {
 					LOG.error("Email not sent");
 				}
@@ -69,7 +69,6 @@ public class MailSenderApplication {
 			}
 		}
 	}
-
 
 	private List<String> getMails() throws IOException {
 		final File file = new File("/emails_1.txt");

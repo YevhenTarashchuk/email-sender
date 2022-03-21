@@ -1,0 +1,4 @@
+post.file.1@ukr.net
+post.file.2@ukr.net
+file.not.email
+post.file.3@ukr.net
