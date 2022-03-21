@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 public enum ErrorCode {
 
     ERR_FILE("Can not read file"),
+    ERR_EMAIL_TEMPLATE("Can not read template"),
     ERR_PARAM_INVALID("Validation failed");
 
     @Getter
