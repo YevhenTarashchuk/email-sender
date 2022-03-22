@@ -1,5 +1,6 @@
 package com.sacret.sender.mailsender.model.entity;
 
+import com.sacret.sender.mailsender.model.enumaration.JobStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,4 +35,5 @@ public class EmailJob {
     @ElementCollection
     @CollectionTable(name = "email_history")
     List<EmailHistory> emailHistoryList;
+    JobStatus jobStatus;
 }
