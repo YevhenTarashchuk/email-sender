@@ -10,7 +10,9 @@ public enum ErrorCode {
 
     ERR_FILE("Can not read file"),
     ERR_EMAIL_TEMPLATE("Can not read template"),
-    ERR_PARAM_INVALID("Validation failed");
+    ERR_PARAM_INVALID("Validation failed"),
+    ERR_EMAIL_RECEIVED("Received invalid email values"),
+    ERR_EMAIL_DB("No emails in db");
 
     @Getter
     final String value;
