@@ -2,7 +2,7 @@ package com.sacret.sender.mailsender;
 
 import com.sacret.sender.mailsender.model.entity.Email;
 import com.sacret.sender.mailsender.repository.EmailRepository;
-import com.sacret.sender.mailsender.service.EmailSender;
+import com.sacret.sender.mailsender.service.EmailSenderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.*;
 import java.util.*;
@@ -19,11 +20,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@EnableAsync
 @SpringBootApplication
 public class MailSenderApplication {
 
 	EmailRepository emailRepository;
-	EmailSender emailSender;
+	EmailSenderService emailSenderService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(MailSenderApplication.class, args);
@@ -53,12 +55,12 @@ public class MailSenderApplication {
 
 		System.out.println(mails);
 
-		String[] arr = new String[10];
+		String[] arr = new String[100];
 		for (int count = 0, i = 0; count < mails.size(); count++) {
 			arr[i] = mails.get(count);
-			if (i == 9) {
+			if (i == 99) {
 				try {
-					emailSender.sendEmail(arr);
+					emailSenderService.sendEmail(arr);
 					emailRepository.deleteAll(Arrays.stream(arr).map(mail -> new Email().setValue(mail)).collect(Collectors.toList()));
 				} catch (Exception e) {
 					LOG.error("Email not sent");
