@@ -1,7 +1,8 @@
 package com.sacret.sender.mailsender.config;
 
 import com.sacret.sender.mailsender.exception.BaseException;
-import com.sacret.sender.mailsender.model.dto.EmailJobDTO;
+import com.sacret.sender.mailsender.model.dto.JobRequestDTO;
+import com.sacret.sender.mailsender.model.dto.JobResponseDTO;
 import com.sacret.sender.mailsender.model.entity.EmailHistory;
 import com.sacret.sender.mailsender.model.entity.EmailJob;
 import com.sacret.sender.mailsender.model.enumaration.ErrorCode;
@@ -68,11 +69,20 @@ public class ModelMapperConfig {
                     .collect(Collectors.toList());
         };
 
-        modelMapper.typeMap(EmailJobDTO.class, EmailJob.class)
+        Converter<List<EmailHistory>, Integer> quantityConverter =
+                ctx -> Objects.isNull(ctx.getSource()) ? null : ctx.getSource().size();
+
+        modelMapper.typeMap(JobRequestDTO.class, EmailJob.class)
                 .addMappings(mapper -> {
-                    mapper.using(textConverter).map(EmailJobDTO::getText, EmailJob::setText);
-                    mapper.using(subjectContext).map(EmailJobDTO::getSubject, EmailJob::setSubject);
-                    mapper.using(emailsConverter).map(EmailJobDTO::getEmails, EmailJob::setEmailHistoryList);
+                    mapper.using(textConverter).map(JobRequestDTO::getText, EmailJob::setText);
+                    mapper.using(subjectContext).map(JobRequestDTO::getSubject, EmailJob::setSubject);
+                    mapper.using(emailsConverter).map(JobRequestDTO::getEmails, EmailJob::setEmailHistoryList);
         });
+
+        modelMapper.typeMap(EmailJob.class, JobResponseDTO.class)
+                .addMappings(mapper -> {
+                   mapper.map(EmailJob::getId, JobResponseDTO::setJobId);
+                   mapper.using(quantityConverter).map(EmailJob::getEmailHistoryList, JobResponseDTO::setAcceptedForProcessing);
+                });
     }
 }
