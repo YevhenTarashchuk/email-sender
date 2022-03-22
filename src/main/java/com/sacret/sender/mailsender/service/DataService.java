@@ -1,5 +1,6 @@
 package com.sacret.sender.mailsender.service;
 
+import com.sacret.sender.mailsender.config.Constants;
 import com.sacret.sender.mailsender.exception.BaseException;
 import com.sacret.sender.mailsender.model.dto.EmailDTO;
 import com.sacret.sender.mailsender.model.entity.Email;
@@ -17,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DataService {
 
-    private static final  String EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-
+    Constants constants;
     EmailRepository emailRepository;
 
     public int upload(Set<String> emails) {
@@ -41,7 +40,7 @@ public class DataService {
 
         emails.removeAll(saved);
 
-        Pattern regexPattern = Pattern.compile(EMAIL_PATTERN);
+        Pattern regexPattern = Pattern.compile(constants.getEmailPattern());
         emails = emails.stream()
                 .filter(email -> regexPattern.matcher(email).matches())
                 .collect(Collectors.toSet());
