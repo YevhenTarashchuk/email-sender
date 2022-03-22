@@ -49,8 +49,16 @@ dependencies {
 	implementation "ch.qos.logback:logback-core:1.2.9"
 	implementation "ch.qos.logback:logback-classic:1.2.9"
 
+	//mapping
+	implementation 'org.modelmapper.extensions:modelmapper-spring:3.1.0'
+
+
 	//util
 	implementation 'commons-io:commons-io:2.11.0'
+	implementation "commons-lang:commons-lang:2.6"
+	implementation 'org.apache.commons:commons-math3:3.6.1'
+	implementation 'commons-codec:commons-codec:1.15'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
 
 	testImplementation "junit:junit:${junitVersion}"
 	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
