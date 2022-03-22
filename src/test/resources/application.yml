@@ -26,3 +26,7 @@ spring:
       hibernate.show_sql: true
       hibernate.session.events.log: true
       hibernate.generate_statistics: true
+
+constants:
+  subject: ${SUBJECT:Останови войну пока еще не поздно!}
+  emailPattern: ${EMAIL_PATTERN:^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+}
