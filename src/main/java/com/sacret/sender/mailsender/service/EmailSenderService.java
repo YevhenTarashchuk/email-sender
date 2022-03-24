@@ -1,22 +1,17 @@
 package com.sacret.sender.mailsender.service;
 
-import com.sacret.sender.mailsender.exception.BaseException;
-import com.sacret.sender.mailsender.model.dto.JobRequestDTO;
-import com.sacret.sender.mailsender.model.dto.JobResponseDTO;
+import com.sacret.sender.mailsender.config.Constants;
+import com.sacret.sender.mailsender.model.entity.Email;
 import com.sacret.sender.mailsender.model.entity.EmailHistory;
 import com.sacret.sender.mailsender.model.entity.EmailJob;
-import com.sacret.sender.mailsender.model.enumaration.ErrorCode;
+import com.sacret.sender.mailsender.model.enumaration.EmailStatus;
 import com.sacret.sender.mailsender.model.enumaration.JobStatus;
-import com.sacret.sender.mailsender.repository.EmailJobRepository;
 import com.sacret.sender.mailsender.repository.EmailRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -25,7 +20,10 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -35,10 +33,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailSenderService {
 
-    ModelMapper modelMapper;
-    JavaMailSender emailSender;
+    StatusService statusService;
+
     EmailRepository emailRepository;
-    EmailJobRepository emailJobRepository;
+    JavaMailSender emailSender;
+    Constants constants;
 
     public void sendEmail(String [] emails) throws MessagingException, IOException {
         MimeMessage message = emailSender.createMimeMessage();
@@ -52,48 +51,52 @@ public class EmailSenderService {
         LOG.info(Arrays.asList(emails).toString());
     }
 
-    public JobResponseDTO startEmailJob(JobRequestDTO dto) {
-        LOG.debug("Incoming dto: {}", dto);
 
-        EmailJob job = prepareJob(dto);
-        sendEmails(job);
-
-        return modelMapper.map(job, JobResponseDTO.class);
-    }
 
     @Async
     void sendEmails(EmailJob job) {
+        statusService.setJobStatusAndSave(job, JobStatus.PROCESSING);
+        int numberOfRecipients = constants.getNumberOfRecipients();
+        int size = job.getEmailHistoryList().size();
 
-    }
-
-    private EmailJob prepareJob(JobRequestDTO dto) {
-        EmailJob job = modelMapper.map(dto, EmailJob.class);
-        prepareEmailData(job);
-        job.setJobStatus(JobStatus.RECEIVED);
-
-        return emailJobRepository.save(job);
-    }
-
-    private void prepareEmailData(EmailJob job) {
-        checkEmailData(job);
-        if (Objects.isNull(job.getEmailHistoryList())) {
-            job.setEmailHistoryList(
-              emailRepository.findAll(PageRequest.of(0,job.getCount())).stream()
-                      .map(email -> new EmailHistory().setEmail(email.getValue()))
-                      .collect(Collectors.toList())
-            );
+        for (int i = 0; i < size; i += numberOfRecipients) {
+            List<EmailHistory> emails = job.getEmailHistoryList().subList(i, Math.min(size, i + numberOfRecipients));
+            try {
+                sendEmail(
+                        emails.stream().map(EmailHistory::getEmail).toArray(String[]::new),
+                        job.getSubject(),
+                        job.getText()
+                );
+                if (Objects.nonNull(job.getCount())) {
+                    emailRepository.deleteAll(emails.stream().map(email -> new Email().setValue(email.getEmail())).collect(Collectors.toList()));
+                }
+                List<EmailHistory> completed = new ArrayList<>();
+                for (int j = i; j < Math.min(size, i + numberOfRecipients); j++) {
+                    completed.add(job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.SENT));
+                }
+                statusService.saveEmailHistory(completed);
+            } catch (Exception e) {
+                LOG.error("Email not sent: {}", emails.stream().map(EmailHistory::getEmail).collect(Collectors.toList()));
+                List<EmailHistory> rejected = new ArrayList<>();
+                for (int j = i; j < Math.min(size, i + numberOfRecipients); j++) {
+                    rejected.add(job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.NOT_SENT));
+                }
+                statusService.saveEmailHistory(rejected);
+            }
         }
 
-        LOG.info("{} emails available for processing", job.getEmailHistoryList().size());
+        job.setFinished(LocalDateTime.now());
+        statusService.setJobStatusAndSave(job, JobStatus.FINISHED);
     }
 
-    private void checkEmailData(EmailJob job) {
-        if (Objects.nonNull(job.getEmailHistoryList()) && job.getEmailHistoryList().isEmpty()) {
-            LOG.warn("Received invalid email values from request");
-            throw new BaseException(HttpStatus.BAD_REQUEST, ErrorCode.ERR_EMAIL_RECEIVED);
-        } else if (Objects.isNull(job.getEmailHistoryList()) && emailRepository.count() == 0) {
-            LOG.warn("No emails are available in the database");
-            throw new BaseException(HttpStatus.BAD_REQUEST, ErrorCode.ERR_EMAIL_DB);
-        }
+    public void sendEmail(String[] emails, String subject, String text)  throws MessagingException {
+        MimeMessage message = emailSender.createMimeMessage();
+        message.setSubject(subject);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setText(text,true);
+        helper.setTo(emails);
+        emailSender.send(message);
+
+        LOG.info("Email sent to: {}", Arrays.asList(emails));
     }
 }
