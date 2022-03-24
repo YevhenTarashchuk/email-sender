@@ -1,5 +1,5 @@
 package com.sacret.sender.mailsender.model.enumaration;
 
 public enum EmailStatus {
-    SENT, NOT_SENT
+    RECEIVED_FOR_SENDING, SENT, NOT_SENT
 }
