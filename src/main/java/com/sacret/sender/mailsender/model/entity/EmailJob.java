@@ -12,7 +12,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -32,8 +34,13 @@ public class EmailJob {
     String subject;
     @Column(length = 1500)
     String text;
-    @ElementCollection
-    @CollectionTable(name = "email_history")
+    @OneToMany(mappedBy = "emailJob", cascade = CascadeType.ALL)
     List<EmailHistory> emailHistoryList;
+    @Enumerated(EnumType.STRING)
     JobStatus jobStatus;
+
+    public void setEmailHistoryList(List<EmailHistory> emailHistoryList) {
+        this.emailHistoryList = emailHistoryList;
+        this.emailHistoryList.forEach(emailHistory -> emailHistory.setEmailJob(this));
+    }
 }
