@@ -1,5 +1,6 @@
 package com.sacret.sender.mailsender.service;
 
+import com.sacret.sender.mailsender.config.Constants;
 import com.sacret.sender.mailsender.exception.BaseException;
 import com.sacret.sender.mailsender.model.dto.JobRequestDTO;
 import com.sacret.sender.mailsender.model.dto.JobResponseDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,10 +30,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailJobService {
 
-    StatusService statusService;
     EmailSenderService emailSenderService;
+    JobStatusService jobStatusService;
     EmailRepository emailRepository;
     ModelMapper modelMapper;
+    Constants constants;
 
 
 
@@ -48,14 +51,16 @@ public class EmailJobService {
         EmailJob job = modelMapper.map(dto, EmailJob.class);
         prepareEmailData(job);
 
-        return statusService.setJobStatusAndSave(job, JobStatus.RECEIVED);
+        return jobStatusService.setJobStatusAndSave(job, JobStatus.RECEIVED);
     }
 
     private void prepareEmailData(EmailJob job) {
         checkEmailData(job);
         if (Objects.isNull(job.getEmailHistoryList())) {
+            Pattern regexPattern = Pattern.compile(constants.getEmailPattern());
             job.setEmailHistoryList(
                     emailRepository.findAll(PageRequest.of(0,job.getCount())).stream()
+                            .filter(email -> regexPattern.matcher(email.getValue()).matches())
                             .map(email -> new EmailHistory().setEmail(email.getValue()))
                             .collect(Collectors.toList())
             );
