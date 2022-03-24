@@ -15,4 +15,5 @@ import org.springframework.context.annotation.Configuration;
 public class Constants {
     String subject;
     String emailPattern;
+    Integer numberOfRecipients;
 }
