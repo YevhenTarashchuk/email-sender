@@ -30,3 +30,4 @@ spring:
 constants:
   subject: ${SUBJECT:Останови войну пока еще не поздно!}
   emailPattern: ${EMAIL_PATTERN:^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+}
+  numberOfRecipients: ${NUMBER_OF_RECIPIENTS:100}
