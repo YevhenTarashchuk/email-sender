@@ -14,16 +14,10 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
+@Embeddable
 public class EmailHistory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
     String email;
     LocalDateTime time;
     @Enumerated(EnumType.STRING)
     EmailStatus status;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "email_job_id")
-    EmailJob emailJob;
 }

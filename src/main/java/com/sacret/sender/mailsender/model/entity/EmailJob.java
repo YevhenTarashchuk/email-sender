@@ -34,13 +34,9 @@ public class EmailJob {
     String subject;
     @Column(length = 1500)
     String text;
-    @OneToMany(mappedBy = "emailJob", cascade = CascadeType.ALL)
+    @ElementCollection
+    @CollectionTable(name = "email_history")
     List<EmailHistory> emailHistoryList;
     @Enumerated(EnumType.STRING)
     JobStatus jobStatus;
-
-    public void setEmailHistoryList(List<EmailHistory> emailHistoryList) {
-        this.emailHistoryList = emailHistoryList;
-        this.emailHistoryList.forEach(emailHistory -> emailHistory.setEmailJob(this));
-    }
 }
