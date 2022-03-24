@@ -21,7 +21,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmailSenderService {
 
-    StatusService statusService;
+    JobStatusService jobStatusService;
 
     EmailRepository emailRepository;
     JavaMailSender emailSender;
@@ -55,7 +54,7 @@ public class EmailSenderService {
 
     @Async
     void sendEmails(EmailJob job) {
-        statusService.setJobStatusAndSave(job, JobStatus.PROCESSING);
+        jobStatusService.setJobStatusAndSave(job, JobStatus.PROCESSING);
         int numberOfRecipients = constants.getNumberOfRecipients();
         int size = job.getEmailHistoryList().size();
 
@@ -70,23 +69,21 @@ public class EmailSenderService {
                 if (Objects.nonNull(job.getCount())) {
                     emailRepository.deleteAll(emails.stream().map(email -> new Email().setValue(email.getEmail())).collect(Collectors.toList()));
                 }
-                List<EmailHistory> completed = new ArrayList<>();
                 for (int j = i; j < Math.min(size, i + numberOfRecipients); j++) {
-                    completed.add(job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.SENT));
+                    job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.SENT);
                 }
-                statusService.saveEmailHistory(completed);
+                jobStatusService.setJobStatusAndSave(job, JobStatus.PROCESSING);
             } catch (Exception e) {
                 LOG.error("Email not sent: {}", emails.stream().map(EmailHistory::getEmail).collect(Collectors.toList()));
-                List<EmailHistory> rejected = new ArrayList<>();
                 for (int j = i; j < Math.min(size, i + numberOfRecipients); j++) {
-                    rejected.add(job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.NOT_SENT));
+                    job.getEmailHistoryList().get(j).setTime(LocalDateTime.now()).setStatus(EmailStatus.NOT_SENT);
                 }
-                statusService.saveEmailHistory(rejected);
+                jobStatusService.setJobStatusAndSave(job, JobStatus.PROCESSING);
             }
         }
 
         job.setFinished(LocalDateTime.now());
-        statusService.setJobStatusAndSave(job, JobStatus.FINISHED);
+        jobStatusService.setJobStatusAndSave(job, JobStatus.FINISHED);
     }
 
     public void sendEmail(String[] emails, String subject, String text)  throws MessagingException {
