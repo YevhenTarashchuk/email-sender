@@ -34,7 +34,9 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         CustomResponse errorResponse = CustomResponse.builder()
                 .status(CustomResponse.Status.ERROR)
-                .error(ErrorCode.ERR_PARAM_INVALID).fieldErrors(fieldErrors).build();
+                .error(ErrorCode.ERR_PARAM_INVALID)
+                .errorMsg(ErrorCode.ERR_PARAM_INVALID.getValue())
+                .fieldErrors(fieldErrors).build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
