@@ -12,6 +12,7 @@ public enum ErrorCode {
     ERR_EMAIL_TEMPLATE("Can not read template"),
     ERR_PARAM_INVALID("Validation failed"),
     ERR_EMAIL_RECEIVED("Received invalid email values"),
+    ERR_JOB_NOT_FOUND("Job is not found"),
     ERR_EMAIL_DB("No emails in db");
 
     @Getter
