@@ -1,7 +1,9 @@
 package com.sacret.sender.mailsender.controller;
 
+import com.sacret.sender.mailsender.repository.EmailJobRepository;
 import com.sacret.sender.mailsender.repository.EmailRepository;
 import com.sacret.sender.mailsender.service.DataService;
+import com.sacret.sender.mailsender.service.EmailSenderService;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,13 @@ public abstract class BaseTest {
     MockMvc mockMvc;
     @Autowired
     EmailRepository emailRepository;
+    @Autowired
+    EmailJobRepository emailJobRepository;
 
     @SpyBean
     DataService dataService;
+    @SpyBean
+    EmailSenderService emailSenderService;
 
     HttpMessageConverter httpMessageConverter;
 
