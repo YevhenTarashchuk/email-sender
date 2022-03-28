@@ -2,6 +2,8 @@ package com.sacret.sender.mailsender.service;
 
 import com.sacret.sender.mailsender.config.Constants;
 import com.sacret.sender.mailsender.exception.BaseException;
+import com.sacret.sender.mailsender.model.dto.JobDetailsResponseDTO;
+import com.sacret.sender.mailsender.model.dto.JobIdDTO;
 import com.sacret.sender.mailsender.model.dto.JobRequestDTO;
 import com.sacret.sender.mailsender.model.dto.JobResponseDTO;
 import com.sacret.sender.mailsender.model.entity.EmailHistory;
@@ -9,6 +11,7 @@ import com.sacret.sender.mailsender.model.entity.EmailJob;
 import com.sacret.sender.mailsender.model.enumaration.EmailStatus;
 import com.sacret.sender.mailsender.model.enumaration.ErrorCode;
 import com.sacret.sender.mailsender.model.enumaration.JobStatus;
+import com.sacret.sender.mailsender.repository.EmailJobRepository;
 import com.sacret.sender.mailsender.repository.EmailRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +21,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,12 +36,27 @@ import java.util.stream.Collectors;
 public class EmailJobService {
 
     EmailSenderService emailSenderService;
+    EmailJobRepository emailJobRepository;
     JobStatusService jobStatusService;
     EmailRepository emailRepository;
     ModelMapper modelMapper;
     Constants constants;
 
+    public List<JobIdDTO> getJobs() {
+        return emailJobRepository.findAll().stream()
+                .map(job -> modelMapper.map(job, JobIdDTO.class))
+                .collect(Collectors.toList());
+    }
 
+    @Transactional
+    public JobDetailsResponseDTO getJob(String jobId) {
+        EmailJob emailJob = emailJobRepository.findById(jobId).orElseThrow(() -> {
+            LOG.warn("JobId: {} is not found", jobId);
+           return new BaseException(HttpStatus.BAD_REQUEST, ErrorCode.ERR_JOB_NOT_FOUND);
+        });
+
+        return modelMapper.map(emailJob, JobDetailsResponseDTO.class);
+    }
 
     public JobResponseDTO startEmailJob(JobRequestDTO dto) {
         LOG.debug("Incoming dto: {}", dto);
