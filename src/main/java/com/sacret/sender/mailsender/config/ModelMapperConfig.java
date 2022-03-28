@@ -1,6 +1,7 @@
 package com.sacret.sender.mailsender.config;
 
 import com.sacret.sender.mailsender.exception.BaseException;
+import com.sacret.sender.mailsender.model.dto.JobDetailsResponseDTO;
 import com.sacret.sender.mailsender.model.dto.JobRequestDTO;
 import com.sacret.sender.mailsender.model.dto.JobResponseDTO;
 import com.sacret.sender.mailsender.model.entity.EmailHistory;
@@ -84,5 +85,9 @@ public class ModelMapperConfig {
                    mapper.map(EmailJob::getId, JobResponseDTO::setJobId);
                    mapper.using(quantityConverter).map(EmailJob::getEmailHistoryList, JobResponseDTO::setAcceptedForProcessing);
                 });
+
+        modelMapper.typeMap(EmailJob.class, JobDetailsResponseDTO.class)
+                .addMappings(mapper ->
+                        mapper.using(quantityConverter).map(EmailJob::getEmailHistoryList, JobDetailsResponseDTO::setAcceptedForProcessing));
     }
 }
